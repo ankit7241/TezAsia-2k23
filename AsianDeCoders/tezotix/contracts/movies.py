@@ -7,7 +7,7 @@ class TezoTix(sp.Contract):
         self.init(
 
             # It contains the contract address of the NFT contract
-            nft_contract_address=sp.address("KT1J7wz4sfuB9wSoJHeX1goVDzfmRrdAeL3j"),   
+            nft_contract_address=sp.address("KT1WBxJutiAWzWQ7WBzskeJvZuWiPvKspKmm"),   
 
             #Ids 
             cityIds = sp.nat(0),
@@ -25,6 +25,8 @@ class TezoTix(sp.Contract):
             movieDetails = sp.map(l ={},tkey = sp.TInt, tvalue = sp.TRecord(name = sp.TString, description = sp.TString,posterLink = sp.TString,screenNumber = sp.TNat,ticketPrice=sp.TNat,startingDate = sp.TString,timeSlot=sp.TString,theatreId=sp.TInt)),           
 
             theatreOwner = sp.map(l ={},tkey = sp.TAddress, tvalue = sp.TInt),
+
+            ticketOwner = sp.map(l ={},tkey = sp.TAddress, tvalue = sp.TSet(t=sp.TString)),
             #Key is seat number and value are details
             #Seats are fixed i.e. 100 so 1st movie 1 to 100, 2nd movie 101 to 200, 3rd....
             seatDetails = sp.map(l={}, tkey=sp.TInt, tvalue=sp.TRecord(ticketOwner=sp.TAddress, booked=sp.TBool,mint_index=sp.TNat,metadata=sp.TBytes,movieId=sp.TInt,seatNumber=sp.TInt))
@@ -69,10 +71,15 @@ class TezoTix(sp.Contract):
     @sp.entry_point
     def book_ticket(self,params):
         
-        sp.set_type(params, sp.TRecord(_movieId=sp.TInt,_seatNumber=sp.TInt,_metadata=sp.TBytes))
+        sp.set_type(params, sp.TRecord(_movieId=sp.TInt,_seatNumber=sp.TInt,_metadata=sp.TBytes,ticketUrl=sp.TString))
 
         self.data.seatDetails[(params._movieId)*75+params._seatNumber] = sp.record(ticketOwner = sp.sender,mint_index=self.data.mint_index,booked=True,metadata=params._metadata,movieId=params._movieId,seatNumber=params._seatNumber)
-  
+
+        sp.if self.data.ticketOwner.contains(sp.sender):
+            self.data.ticketOwner[sp.sender].add(params.ticketUrl)
+        sp.else:
+            self.data.ticketOwner[sp.sender] = sp.set([params.ticketUrl], t = sp.TString)
+
         # Inter-contract call take place here to mint the artwork
         
         c = sp.contract(
@@ -93,7 +100,7 @@ class TezoTix(sp.Contract):
                         address=sp.sender,
                         metadata={"": self.data.seatDetails[(params._movieId)*75+params._seatNumber].metadata},
                     ),
-                    sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*100000),
+                    sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*1000000),
                     c,
                 )
         
@@ -122,6 +129,6 @@ def test():
     scenario += auction.add_movie(_theatreId=0,_name="Brahmastra",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = alice)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)
-    scenario += auction.book_ticket(_movieId=0,_seatNumber=10,_metadata=sp.bytes('0x30')).run(sender = alice)
-    scenario += auction.book_ticket(_movieId=1,_seatNumber=45,_metadata=sp.bytes('0x30')).run(sender = bob)
-    scenario += auction.book_ticket(_movieId=2,_seatNumber=45,_metadata=sp.bytes('0x30')).run(sender = bob)
+    scenario += auction.book_ticket(_movieId=0,_seatNumber=10,_metadata=sp.bytes('0x30'),ticketUrl="sdfdsfdfs").run(sender = alice,amount = sp.utils.nat_to_mutez(100000000))
+    scenario += auction.book_ticket(_movieId=1,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="agdfdf").run(sender = bob,amount = sp.utils.nat_to_mutez(100000000))
+    scenario += auction.book_ticket(_movieId=2,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="wejrkewjrk").run(sender = bob,amount = sp.utils.nat_to_mutez(100000000))

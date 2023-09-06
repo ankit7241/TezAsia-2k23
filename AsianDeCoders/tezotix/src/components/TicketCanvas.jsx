@@ -41,7 +41,9 @@ export default function TicketCanvas({ ticketDetails, setTicketUrl, height }) {
 
 			var poster = new Image();
 			poster.src = ticketDetails.poster;
-			poster.setAttribute("crossorigin", "anonymous");
+			// poster.setAttribute("crossorigin", "anonymous");
+			poster.crossOrigin = "anonymous";
+
 			poster.onload = function () {
 				ctx.drawImage(poster, getW(10), getH(10), getW(180), getH(124));
 			};
