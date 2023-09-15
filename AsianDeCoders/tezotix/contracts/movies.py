@@ -7,7 +7,7 @@ class TezoTix(sp.Contract):
         self.init(
 
             # It contains the contract address of the NFT contract
-            nft_contract_address=sp.address("KT1WBxJutiAWzWQ7WBzskeJvZuWiPvKspKmm"),   
+            nft_contract_address=sp.address("KT1VXGcetxwZxKmtPo9reKKktxQ44QHSAptT"),   
 
             #Ids 
             cityIds = sp.nat(0),
@@ -80,6 +80,8 @@ class TezoTix(sp.Contract):
         sp.else:
             self.data.ticketOwner[sp.sender] = sp.set([params.ticketUrl], t = sp.TString)
 
+        sp.send(self.data.theatreDetails[self.data.movieDetails[params._movieId].theatreId].theatreOwner, sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*990000)) 
+
         # Inter-contract call take place here to mint the artwork
         
         c = sp.contract(
@@ -99,12 +101,15 @@ class TezoTix(sp.Contract):
                         amount=1,
                         address=sp.sender,
                         metadata={"": self.data.seatDetails[(params._movieId)*75+params._seatNumber].metadata},
+                        # metadata={"": sp.utils.metadata_of_url()},
                     ),
-                    sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*1000000),
+                    sp.utils.nat_to_mutez(0),
+                    # sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*1000000),
                     c,
                 )
         
         self.data.mint_index += 1
+        
 
 @sp.add_test(name="main")
 def test():
@@ -124,8 +129,8 @@ def test():
     scenario.h2("Auction Test 1")   
 
     scenario += auction.add_city("Chennai").run(sender = alice)
-    scenario += auction.add_theatre(_cityId=0,_name="Ankit",_address="Ankit").run(sender = alice)
-    scenario += auction.add_theatre(_cityId=0,_name="XYZ",_address="Ankit").run(sender = bob)
+    scenario += auction.add_theatre(_cityId=0,_name="Ankit",_address="Ankit").run(sender = alice,amount = sp.utils.nat_to_mutez(100000000))
+    scenario += auction.add_theatre(_cityId=0,_name="XYZ",_address="Ankit").run(sender = bob,amount = sp.utils.nat_to_mutez(100000000))
     scenario += auction.add_movie(_theatreId=0,_name="Brahmastra",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = alice)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)

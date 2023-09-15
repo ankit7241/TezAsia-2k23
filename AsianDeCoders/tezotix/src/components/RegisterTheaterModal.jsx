@@ -82,7 +82,7 @@ export default function RegisterTheaterModal({
 					_name: theatreName,
 					_address: location,
 				})
-				.send();
+				.send({ mutez: true, amount: 10000000 });
 			await op.confirmation(1);
 
 			toast.success(`Theatre Successfully added!`, {
