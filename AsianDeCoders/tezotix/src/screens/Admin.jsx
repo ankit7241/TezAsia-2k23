@@ -19,21 +19,17 @@ export default function Admin() {
     const [activeMovies, setActiveMovies] = useState([]);
 
     const [openAddMovieModal, setOpenAddMovieModal] = useState(false);
-    const [openRegisterTheaterModal, setOpenRegisterTheaterModal] =
-        useState(false);
+    const [openRegisterTheaterModal, setOpenRegisterTheaterModal] = useState(false);
 
     useEffect(() => {
         fetchData();
-    }, [address]);
+    }, [address, openRegisterTheaterModal, openAddMovieModal]);
 
     const fetchData = async () => {
         try {
             const storage = await fetchMoviesStorage();
 
             const theatreId = storage.theatreOwner[address];
-            console.log(storage)
-            console.log(address)
-            console.log(storage.theatreOwner)
             setTheatreId(theatreId);
 
             const theatreDetail = storage.theatreDetails[theatreId];
