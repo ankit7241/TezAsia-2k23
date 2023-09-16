@@ -7,7 +7,7 @@ class TezoTix(sp.Contract):
         self.init(
 
             # It contains the contract address of the NFT contract
-            nft_contract_address=sp.address("KT1VXGcetxwZxKmtPo9reKKktxQ44QHSAptT"),   
+            nft_contract_address=sp.address("KT1FUmcWZTmQWVvUx9UscwSDtc2tNnYYe3F4"),   
 
             #Ids 
             cityIds = sp.nat(0),
@@ -80,7 +80,7 @@ class TezoTix(sp.Contract):
         sp.else:
             self.data.ticketOwner[sp.sender] = sp.set([params.ticketUrl], t = sp.TString)
 
-        sp.send(self.data.theatreDetails[self.data.movieDetails[params._movieId].theatreId].theatreOwner, sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*990000)) 
+        sp.send(self.data.theatreDetails[self.data.movieDetails[params._movieId].theatreId].theatreOwner, sp.utils.nat_to_mutez(self.data.movieDetails[params._movieId].ticketPrice*1000000)) 
 
         # Inter-contract call take place here to mint the artwork
         
@@ -134,6 +134,6 @@ def test():
     scenario += auction.add_movie(_theatreId=0,_name="Brahmastra",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = alice)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)
     scenario += auction.add_movie(_theatreId=1,_name="John Wick",_description="Great Movie",_posterLink = "sdfdsdfsddf",_screenNumber=1,_ticketPrice = 100,_startingDate = "16/08/2023",_timeSlot="9 to 12").run(sender = bob)
-    scenario += auction.book_ticket(_movieId=0,_seatNumber=10,_metadata=sp.bytes('0x30'),ticketUrl="sdfdsfdfs").run(sender = alice,amount = sp.utils.nat_to_mutez(100000000))
-    scenario += auction.book_ticket(_movieId=1,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="agdfdf").run(sender = bob,amount = sp.utils.nat_to_mutez(100000000))
-    scenario += auction.book_ticket(_movieId=2,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="wejrkewjrk").run(sender = bob,amount = sp.utils.nat_to_mutez(100000000))
+    scenario += auction.book_ticket(_movieId=0,_seatNumber=10,_metadata=sp.bytes('0x30'),ticketUrl="sdfdsfdfs").run(sender = alice,amount = sp.utils.nat_to_mutez(110000000))
+    scenario += auction.book_ticket(_movieId=1,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="agdfdf").run(sender = bob,amount = sp.utils.nat_to_mutez(110000000))
+    scenario += auction.book_ticket(_movieId=2,_seatNumber=45,_metadata=sp.bytes('0x30'),ticketUrl="wejrkewjrk").run(sender = bob,amount = sp.utils.nat_to_mutez(11000000))
