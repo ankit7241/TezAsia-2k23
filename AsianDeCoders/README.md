@@ -13,7 +13,7 @@ The current movie-ticketing system is inefficient and vulnerable to duplicates. 
 TezoTix is a blockchain-based ticketing service that will provide an interface for moviegoers to purchase tickets in a way that is faster, more secure and more anonymous than the current model. Using innovative technology, Mintix will issue non-transferable NFTs (tokens) that each represent one ticket. This will enable theater owners to validate tickets and remove the scope for duplicates or fake tickets to be sold, while still keeping holders of the tokens anonymous.
 
 ## Project Demo, Photos, Video
-To get a feel our product, visit the [Live Project Link](https://tez-asia-2k23-idev2n0gf-ankit7241.vercel.app/)
+To get a feel our product, visit the [Live Project Link](https://tezotix-h8f2ripjq-ankit7241.vercel.app/)
 
 Github repo: [Link](https://github.com/ankit7241/TezAsia-2k23)
 
